@@ -55,6 +55,7 @@ def textToSpeech(text,Library,use_gl=False):#text,torch,model,CONFIG,use_cuda,au
 	synthesis = Library["synthesis"]
 	wavernn = Library["wavernn"]
 	batched_wavernn = Library["batched_wavernn"]
+	import sys
 	sys_main_stream = sys.stdout
 	sys.stdout = open("log.txt","w");
 	waveform, alignment, mel_spec, mel_postnet_spec, stop_tokens = synthesis(model, text, CONFIG, use_cuda, audioprocessor, truncated=True, enable_eos_bos_chars=CONFIG.enable_eos_bos_chars)
