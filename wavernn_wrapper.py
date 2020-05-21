@@ -1,4 +1,4 @@
-def initializeWaveRNN(path_to_WaveRNN):
+def initializeWaveRNN():
 	import torch
 	from localimport import localimport
 	from TTS.utils.audio import AudioProcessor
@@ -23,8 +23,8 @@ def initializeWaveRNN(path_to_WaveRNN):
 	model.eval()
 	model.decoder.max_decoder_steps = 2000
 	VOCODER_CONFIG = load_config(wavernn_pretrained_model_config)
-	with localimport(path_to_WaveRNN) as _importer:
-		from WaveRNN.models.wavernn import Model
+	#with localimport(path_to_WaveRNN) as _importer:
+	from WaveRNN.models.wavernn import Model
 	bits = 10
 	wavernn = Model(
 		rnn_dims=512,
