@@ -1,98 +1,42 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="javascripts/jquery-3.5.1.slim.min.js"></script>
+    <script type="text/javascript" src="javascripts/socket.io.min.js"></script>	
+</head>
+<body>
+<h4>Index</h4>
+<input type="text" style="width: 80vw;" id="story_input"/><input type="button" style="width: 18vw;" id="story_input_button" value="Send"/>
+<div id="result"></div>
+<script type="text/javascript">
+    //var socket = io.connect('http://' + document.domain + ':' + location.port);
+	var socket = io.connect();
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="stylesheets/bootstrap.min.css">
-
-	<title>Alyce</title>
-	<style>
-		.textareaclass{
-			width: 100%;
-			border: none;
-			text-align: justify;
+    socket.on('connect', function () {
+	  var story_button = $('#story_input_button').on('click',function(e){
+		let story_input = $('#story_input').val()
+		if(story_input!=""){
+			socket.emit('data_to_server',{ message : story_input })
+			$('#story_input').val("")
 		}
-	</style>
-  </head>
-  <body>
-    <div class="container-fluid">
-		<div class="row">
-			<div class="col-12 text-center bg-dark">
-				<h3 class="text-light">Alyce : An AI fine tuned Screenplay Writer</h3>
-			</div>
-		</div>
-	</div>
-	<div class="container">
-		<div class="row">
-			<div class="col-12 col-sm-12 col-md-6 col-lg-6" style="border-right: 1px solid grey;">
-				&nbsp;
-				<h6>Enter your story :</h6><br/>
-				<textarea id="story" class="textareaclass" rows="5" max-rows="50" style="height: 30vh;" placeholder="Type Your story here"></textarea><br/>&nbsp;</br>
-				<div class="container">
-					<div class="row">
-						<div class="col-12 col-sm-12 col-md-12 col-lg-6">
-							&nbsp;<br>
-							<input type="button" id="fetchStory" value="Fetch a Sample Story">
-							<br>&nbsp;
-						</div>
-						<div class="col-12 col-sm-12 col-md-12 col-lg-6">
-							&nbsp;<br>
-							<input type="button" id="submitStory"value="Submit Story&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;">
-							<br>&nbsp;
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-sm-12 col-md-6 col-lg-6">
-				&nbsp;
-				<h6>Output : </h6><br/>
-				<div class="container">
-					<div id="output" style="text-align: justify;"></div><br/>&nbsp;</br>
-				</div>
-			</div>
-		</div>
-	</div>
+		else
+			alert("Please Enter Some Data before Sending!....")
+	  })
+    })
 	
-    <script src="javascripts/jquery-3.4.1.slim.min.js"></script>
-    <script src="javascripts/popper.min.js"></script>
-	<script src="javascripts/bootstrap.min.js"></script>
-	<script src="javascripts/textarea-max-rows.js"></script>
-	<script>
-		document.getElementById("submitStory").onclick = function(){
-			var story = document.getElementById("story").value;
-			var xhttp = new XMLHttpRequest();
-			xhttp.onreadystatechange = function() {
-				if (this.readyState == 4 && this.status == 200) {
-					document.getElementById("output").innerHTML = this.responseText;
-				}
-				else if(this.readyState == 4 && this.status >= 400){
-					document.getElementById("output").innerHTML = "Some Error Occured!......";
-				}
-			};
-			xhttp.open("POST", "/", true);
-			xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-			xhttp.send("story="+story);
-		}
-		document.getElementById("fetchStory").onclick = function(){
-			var story = document.getElementById("story");
-			var xhttp = new XMLHttpRequest();
-			xhttp.onreadystatechange = function() {
-				if (this.readyState == 4 && this.status == 200) {
-					story.value = this.responseText;
-				}
-				else if(this.readyState == 4 && this.status >= 400){
-					window.alert("Some Error Occured while Fetching Story!......");
-				}
-			};
-			xhttp.open("GET", "story/story01.txt", true);
-			xhttp.send();
-		}
-	</script>
-  </body>
+	socket.on('data_to_client', function (msg) {
+      if(typeof msg.message !== 'undefined')
+		$("#result").append("<h6>New Notification</h6>&emsp;MESSAGE : "+msg.message)
+	  else{
+		console.log("Some data was received!.....")
+		console.log(msg)
+		return
+	  }
+	  if(typeof msg.status !== 'undefined')
+		$("#result").append("<br/>&emsp;STATUS : "+msg.status)
+	  if(typeof msg.data !== 'undefined')
+		$("#result").append("<br/>&emsp;DATA : "+msg.data)
+    })
+</script>
+</body>
 </html>
-
-
-

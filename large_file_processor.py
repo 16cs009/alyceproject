@@ -1,6 +1,7 @@
 import os
 import base64
-
+import hashlib
+hash
 def split_file_to_pieces(filename):
 	fin = open(filename,"rb")
 	j = 1
@@ -31,13 +32,13 @@ def split_file_to_pieces(filename):
 		fintmp.close()
 		fout.close()
 		os.remove(filename+".PIECE{fileno}".format(fileno=j))
-		hcheck = hcheck+str(hash(k))
+		hcheck = hcheck+str(hashlib.sha256(str(k).encode()).hexdigest())
 		foutconfig.write("FILENAME{fileno} : {file}.PIECE{fileno}.dat\n".format(file=filename,fileno=j))
 		j = j+1
 		i = i+BUFFER_LENGTH
 		print(str(i/(1024*1024))+" MB processed!....")
 
-	foutconfig.write("HASH : "+(hcheck+str(hash(hcheck)))+"\n");
+	foutconfig.write("HASH : "+(hcheck+str(hashlib.sha256(hcheck.encode()).hexdigest()))+"\n");
 	foutconfig.close()
 	fin.close()
 	print("File Splitting Completed!...")
@@ -60,9 +61,9 @@ def calculate_hash(filename):
 		if fin.tell()+BUFFER_LENGTH>totallength:
 			BUFFER_LENGTH = totallength - fin.tell() + 1
 		k = fin.read(BUFFER_LENGTH)
-		hcheck = hcheck+str(hash(k))
+		hcheck = hcheck+str(hashlib.sha256(str(k).encode()).hexdigest())
 	fin.close()
-	return (hcheck+str(hash(hcheck)))
+	return (hcheck+str(hashlib.sha256(hcheck.encode()).hexdigest()))
 
 def combine_pieces_to_file(configfilename):
 	config = read_config_file(configfilename)
